@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RoundProgressView">
+        <attr name="color1" format="color"></attr>
+        <attr name="color2" format="color"></attr>
+        <attr name="color3" format="color"></attr>
+        <attr name="title" format="string"></attr>
+        <attr name="progressValue" format="float"></attr>
+        <attr name="maxValue" format="float"></attr>
+        <attr name="diameter" format="dimension"></attr>
+        <attr name="percentValueTextSize" format="dimension"></attr>
+        <attr name="titleTextSize" format="dimension"></attr>
+        <attr name="valueTextColor" format="color"></attr>
+        <attr name="titleTextColor" format="color"></attr>
+    </declare-styleable>
+</resources>
