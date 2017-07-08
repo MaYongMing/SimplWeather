@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/colorWhite">
+    <TextView
+        android:paddingLeft="12dp"
+        android:text="出行建议"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="28dp"/>
+
+    <View
+        android:background="@color/colorDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"/>
+
+    <include layout="@layout/weather_suggestion_item"
+             android:id="@+id/weather_suggestion_cloth"/>
+    <View
+        android:background="@color/colorDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"/>
+
+    <include layout="@layout/weather_suggestion_item"
+             android:id="@+id/weather_suggestion_trav"/>
+
+    <View
+        android:background="@color/colorDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"/>
+
+    <include layout="@layout/weather_suggestion_item"
+             android:id="@+id/weather_suggestion_uv"/>
+
+    <View
+        android:background="@color/colorDivider"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"/>
+
+
+
+    <TextView
+        android:paddingLeft="12dp"
+        android:text="运动建议"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="28dp"/>
+
+    <View
+        android:background="@color/colorDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"/>
+
+    <include layout="@layout/weather_suggestion_item"
+             android:id="@+id/weather_suggestion_sport"/>
+
+    <View
+        android:background="@color/colorDivider"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"/>
+    <TextView
+        android:paddingLeft="12dp"
+        android:text="驾车建议"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="28dp"/>
+
+    <View
+        android:background="@color/colorDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"/>
+
+    <include layout="@layout/weather_suggestion_item"
+             android:id="@+id/weather_suggestion_cw"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="24dp"/>
+</LinearLayout>

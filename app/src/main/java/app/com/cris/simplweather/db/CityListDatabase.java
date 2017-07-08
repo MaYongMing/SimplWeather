@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import app.com.cris.simplweather.model.CityEntity;
+import app.com.cris.simplweather.utils.Constants;
+import app.com.cris.simplweather.utils.LogUtil;
 
 public class CityListDatabase {
 
@@ -34,6 +36,7 @@ public class CityListDatabase {
 	public void endTransaction(){
 		db.endTransaction();
 	}
+
 	public void saveDistrict(CityEntity cityEntity){
 		if (cityEntity!=null){
 
@@ -79,6 +82,70 @@ public class CityListDatabase {
 		return cityList;
 	}
 
+
+
+	public void saveCityId(String cityId){
+		if(null != cityId)
+		db.execSQL("replace Into city_chosen(city_id) values(?)", new String[]{cityId});
+	}
+
+	public void saveCityName(String cityId,String cityName){
+		if(null != cityId)
+			db.execSQL("update city_chosen set city_name = ? where city_id = ?", new String[]{cityName,cityId});
+	}
+
+	public String getCityId(String cityName){
+
+		String name = null;
+		Cursor cursor = db.rawQuery("select * from city_chosen where city_name = ?", new String[]{cityName}, null);
+		if (cursor.moveToFirst()) {
+			do {
+
+				name = cursor.getString(cursor.getColumnIndex("city_id"));
+			} while (cursor.moveToNext());
+		}
+		if (cursor != null) cursor.close();
+
+		return name;
+	}
+
+	public List<String> loadAllChosenCityName() {
+		List<String> cityIds = new ArrayList<>();
+		Cursor cursor = db.rawQuery("select * from city_chosen", null);
+		if (cursor.moveToFirst()) {
+			do {
+				cityIds.add(cursor.getString(cursor.getColumnIndex("city_name")));
+
+			} while (cursor.moveToNext());
+		}
+		if (cursor != null) cursor.close();
+
+		return cityIds;
+	}
+
+	public List<String> loadAllChosenCityId() {
+		List<String> cityIds = new ArrayList<>();
+		Cursor cursor = db.rawQuery("select * from city_chosen", null);
+		if (cursor.moveToFirst()) {
+			do {
+				cityIds.add(cursor.getString(cursor.getColumnIndex("city_id")));
+
+			} while (cursor.moveToNext());
+		}
+		if (cursor != null) cursor.close();
+
+		return cityIds;
+	}
+
+	public int removeCityId(String cityId){
+
+		if(null != cityId){
+
+			return  db.delete("city_chosen","city_id = ?", new String[]{cityId} );
+		}
+
+		return 0;
+	}
 	
 	
 }

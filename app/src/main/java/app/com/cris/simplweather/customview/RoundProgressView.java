@@ -77,7 +77,7 @@ public class RoundProgressView extends View {
         valueTextColor = array.getColor(R.styleable.RoundProgressView_valueTextColor,Color.GRAY);
         titleTextColor = array.getColor(R.styleable.RoundProgressView_titleTextColor,Color.GRAY);
         titleTextSize = array.getDimension(R.styleable.RoundProgressView_titleTextSize,24);
-        mWidth = mHeight = (int) diameter + dpToPx(12);
+        mWidth = mHeight = (int) diameter + dpToPx(6);
     }
 
     private void intialPaints(){
@@ -167,7 +167,7 @@ public class RoundProgressView extends View {
 
         Rect bounds = new Rect();
         mPercentTextPaint.getTextBounds(String.format("%.0f",curProValue),0,1,bounds);
-        canvas.drawText(String.format("%.0f",curProValue), left+diameter/2 , top + diameter/2+bounds.height()/4 , mPercentTextPaint);
+        canvas.drawText(String.format("%.0f",curProValue), left+diameter/2 , top + diameter/2 , mPercentTextPaint);
 
         canvas.drawText(titleString, left+diameter/2 , top + diameter/2+ bounds.height()*3/2 , mTitlePaint);
 

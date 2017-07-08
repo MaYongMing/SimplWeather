@@ -32,8 +32,10 @@ import java.util.jar.Manifest;
 
 import app.com.cris.simplweather.MainInfoActivity;
 import app.com.cris.simplweather.R;
+import app.com.cris.simplweather.db.CityListDatabase;
 import app.com.cris.simplweather.model.CityEntity;
 import app.com.cris.simplweather.presenter.SplashPresenter;
+import app.com.cris.simplweather.service.UpdateService;
 import app.com.cris.simplweather.utils.Constants;
 import app.com.cris.simplweather.utils.LogUtil;
 import app.com.cris.simplweather.utils.PreferenceUtil;
@@ -75,7 +77,7 @@ public class SplashActivity extends AppCompatActivity implements SplashView{
         mUnbinder = ButterKnife.bind(this);
         mPresenter = new SplashPresenter();
         mPresenter.attachView(this);
-        if ( !isAllPermissionGranted ){
+        if ( !isAllPermissionGranted  && Build.VERSION.SDK_INT >= 23){
             checkPermissions(Constants.PERMISSIONS);
         }else {
             mPresenter.start();
@@ -98,7 +100,6 @@ public class SplashActivity extends AppCompatActivity implements SplashView{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mUnbinder.unbind();
         mPresenter.stop();
     }
 
@@ -229,20 +230,30 @@ public class SplashActivity extends AppCompatActivity implements SplashView{
 
     @Override
     public Context getContext() {
-        return SplashActivity.this;
+        return this;
     }
 
 
     @Override
     public void navigationToCityWeatherActivty(CityEntity cityEntity) {
 
-        Intent intent = new Intent(SplashActivity.this, CityWeatherActivity.class);
+        Intent intent = new Intent(SplashActivity.this, WeatherPagerActivity.class);
+
         if(null != cityEntity){
+
             intent.putExtra(Constants.INTENT_KEY_STREET_NAME,cityEntity.getStreetName());
             intent.putExtra(Constants.INTENT_KEY_CITY_ID,cityEntity.getCityId());
-            LogUtil.d(Constants.DEBUG_TAG,"get target city " + cityEntity.getStreetName() + " "+cityEntity.getCityId());
+
         }
         startActivity(intent);
+
+        int fre =(int) PreferenceUtil.getLong(getApplicationContext(),Constants.Preferences.PREF_NAME,Constants.Preferences.AUTO_UPDATE_FRE,2);
+        if(fre != 0){
+            Intent i = new Intent(getApplicationContext(), UpdateService.class);
+            i.putExtra(Constants.INTENT_KEY_UPDATE_FRE,fre);
+            startService(i);
+        }
+
         finish();
     }
 
@@ -250,6 +261,14 @@ public class SplashActivity extends AppCompatActivity implements SplashView{
     public void navigationToCityPickActivity() {
 
         startActivity(new Intent(SplashActivity.this, CityPickActivity.class));
+
+        int fre =(int) PreferenceUtil.getLong(getApplicationContext(),Constants.Preferences.PREF_NAME,Constants.Preferences.AUTO_UPDATE_FRE,2);
+        if(fre != 0){
+            Intent i = new Intent(getApplicationContext(), UpdateService.class);
+            i.putExtra(Constants.INTENT_KEY_UPDATE_FRE,fre);
+            startService(i);
+        }
+
         finish();
     }
 

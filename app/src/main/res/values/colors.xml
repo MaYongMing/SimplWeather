@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="colorDivider">#FFFFFF</color>
+    <color name="colorPrimary">#22B2DA</color>
+    <color name="colorPrimaryDark">#22B2DA</color>
+    <color name="colorAccent">#E0E7F1</color>
+    <color name="colorDivider">#FBFBFB</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorMainBackground">#3DC4D0</color>
+    <color name="colorBgClothes">#3DC4D0</color>
+    <color name="colorBgUV">#F1684E</color>
+    <color name="colorBgSport">#1EE494</color>
+    <color name="colorBgTrav">#00AD7C</color>
+    <color name="colorBgCw">#D7C37A</color>
+    <color name="colorCitySearchBg">#22B2DA</color>
+    <color name="colorFloatingActionButtonBG">#22B2DA</color>
+    <color name="colorThumbChecked">#ff3097fd</color>
+    <color name="colorPopupBg">#8ed2c9</color>
+
 </resources>

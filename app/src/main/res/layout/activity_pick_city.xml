@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:orientation="horizontal"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:background="@color/colorCitySearchBg">
+    <ImageButton
+        android:id="@+id/activity_pick_city_back"
+        android:src="@drawable/ic_action_back"
+        android:background="@color/colorWhite"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        />
+    <EditText
+        android:id="@+id/activity_pick_city_input"
+        android:background="@color/colorWhite"
+        android:layout_gravity="center_vertical"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_weight="1"/>
+
+    <ImageButton
+        android:id="@+id/activity_pick_city_clear"
+        android:src="@drawable/ic_action_clear"
+        android:background="@color/colorWhite"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:visibility="gone"
+        />
+
+</LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/activity_pick_city_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

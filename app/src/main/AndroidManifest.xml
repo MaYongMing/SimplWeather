@@ -30,14 +30,23 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         >
 
         <activity android:name=".MainInfoActivity"/>
-        <activity android:name=".activity.CityWeatherActivity"/>
-        <activity android:name=".activity.CityPickActivity"/>
+        <activity android:name=".activity.SettingActivity"
+            android:parentActivityName=".activity.WeatherPagerActivity"/>
+
+        <activity android:name=".activity.WeatherPagerActivity"
+                  android:configChanges="orientation|screenSize|keyboardHidden"
+                  android:launchMode="singleTask"/>
+
+        <activity android:name=".activity.CityManagerActivity"
+                  android:launchMode="singleTask"/>
+        <activity android:name=".activity.CityPickActivity"
+                  android:launchMode="singleTask"/>
 
         <activity android:name=".activity.SplashActivity"
                   android:label="@string/app_name"
@@ -48,8 +57,12 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.amap.api.location.APSService"/>
+        <service android:name=".service.NotificationService"/>
+        <service android:name=".service.UpdateService"/>
+        <receiver android:name=".service.WakeUpReciever"/>
+        <receiver android:name=".service.NotiRefreshReceiver"/>
 
+        <service android:name="com.amap.api.location.APSService"/>
         <meta-data android:name="com.amap.api.v2.apikey" android:value="d42b7b454c8b698e64d406b6a5420fe0"/>
 
     </application>

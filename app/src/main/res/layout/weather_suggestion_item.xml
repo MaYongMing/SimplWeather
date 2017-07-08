@@ -1,0 +1,42 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="12dp"
+    android:layout_marginBottom="12dp"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <ImageView
+        android:id="@+id/weather_suggestion_item_icon"
+        android:src="@drawable/ic_clothes_level"
+        android:layout_marginLeft="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_ic_cloth"
+        />
+    <LinearLayout
+        android:id="@+id/weather_suggestion_item_container"
+        android:layout_marginLeft="12dp"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/weather_suggestion_item_title"
+            android:text="炎热"
+            android:textSize="14sp"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/weather_suggestion_item_content"
+            android:text="天气炎热，建议着短衫各项气象条件适宜，发生感冒机率较低。但请避免长期处于空调房间中，以防感冒。"
+            android:textSize="12sp"
+            android:paddingRight="14dp"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"/>
+    </LinearLayout>
+</LinearLayout>

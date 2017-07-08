@@ -24,6 +24,21 @@ public class PreferenceUtil {
         return  editor.commit();
     }
 
+    public  static boolean putLong(Context context, String preName, String key, long value){
+
+        SharedPreferences preferences = context.getSharedPreferences(preName,Context.MODE_APPEND);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong(key,value);
+        return  editor.commit();
+    }
+
+
+    public static long getLong(Context context, String preName, String key, long value) {
+
+        SharedPreferences preferences = context.getSharedPreferences(preName, Context.MODE_APPEND);
+        return preferences.getLong(key,value);
+    }
+
     public static String getString(Context context, String preName, String key, String value) {
 
         SharedPreferences preferences = context.getSharedPreferences(preName, Context.MODE_APPEND);

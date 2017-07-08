@@ -1,6 +1,7 @@
 package app.com.cris.simplweather.presenter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
@@ -8,16 +9,19 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 
+import java.security.PrivateKey;
 import java.util.List;
 
 import app.com.cris.simplweather.db.CityListDatabase;
 import app.com.cris.simplweather.model.CityEntity;
 import app.com.cris.simplweather.model.LocationEntity;
-import app.com.cris.simplweather.net.DownManager;
+import app.com.cris.simplweather.net.DownLoadManager;
+import app.com.cris.simplweather.service.NotificationService;
 import app.com.cris.simplweather.utils.Constants;
 import app.com.cris.simplweather.utils.LogUtil;
 import app.com.cris.simplweather.utils.NetUtil;
 import app.com.cris.simplweather.utils.PreferenceUtil;
+import app.com.cris.simplweather.viewinterface.BaseView;
 import app.com.cris.simplweather.viewinterface.SplashView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -40,6 +44,7 @@ public class SplashPresenter extends  BasePresenter implements AMapLocationListe
     private boolean isCityListDBCreated;
     private boolean isNetWorkAvailable;
     private boolean isLocatedSuccess;
+    private boolean isLocatingON;
 
     private LocationEntity mLocatedCity;
     private CityEntity mTargetCity;
@@ -48,8 +53,8 @@ public class SplashPresenter extends  BasePresenter implements AMapLocationListe
 
 
     @Override
-    public void attachView(Activity activity){
-        mSplashView = (SplashView) activity;
+    public void attachView(BaseView baseView){
+        mSplashView = (SplashView) baseView;
     };
 
     @Override
@@ -58,6 +63,8 @@ public class SplashPresenter extends  BasePresenter implements AMapLocationListe
         isNetWorkAvailable = NetUtil.isNetworkAvailable(mSplashView.getContext().getApplicationContext());
         isFirstLunch = PreferenceUtil.getboolean(mSplashView.getContext().getApplicationContext(), Constants.Preferences.PREF_NAME,Constants.Preferences.IS_FIRST_START,true);
         isCityListDBCreated = PreferenceUtil.getboolean(mSplashView.getContext().getApplicationContext(), Constants.Preferences.PREF_NAME,Constants.Preferences.IS_DB_CREATED,false);
+        isLocatingON = PreferenceUtil.getboolean(mSplashView.getContext().getApplicationContext(), Constants.Preferences.PREF_NAME,Constants.Preferences.IS_LOCATING_ON,true);
+
         String defaultCityId = PreferenceUtil.getString(mSplashView.getContext().getApplicationContext(),Constants.Preferences.PREF_NAME,Constants.Preferences.DEFAULT_CITY_ID,"CN101220104");
         mDefaultCity.setCityId(defaultCityId);
 
@@ -67,11 +74,18 @@ public class SplashPresenter extends  BasePresenter implements AMapLocationListe
                 downLoadCityList();
             }
             else {
-                startLocation();
+                if(isLocatingON){
+                    startLocation();
+                }
+                else {
+                    mSplashView.navigationToCityWeatherActivty(mDefaultCity);
+                }
             }
         }
         else {
-            goToNext();
+            LogUtil.d(Constants.DEBUG_TAG,"Please check network state !");
+            mSplashView.toastMessage("未检测到网络连接，请查看网络设置");
+            mSplashView.navigationToCityWeatherActivty(mDefaultCity);
         }
     }
 
@@ -91,7 +105,7 @@ public class SplashPresenter extends  BasePresenter implements AMapLocationListe
 
     private void downLoadCityList(){
         LogUtil.d(Constants.DEBUG_TAG,"First launch, start downloading city list...");
-        mDisposable = DownManager.getInstance().getCityList()
+        mDisposable = DownLoadManager.getInstance().getCityList()
                 .doOnNext(new Consumer<List<CityEntity>>() {
                     @Override
                     public void accept(@NonNull List<CityEntity> cityEntities) throws Exception {
@@ -140,8 +154,8 @@ public class SplashPresenter extends  BasePresenter implements AMapLocationListe
         mLocationOption.setNeedAddress(true);
         mLocationOption.setWifiScan(true);
         mLocationOption.setMockEnable(true);
-        mLocationOption.setInterval(2000);
-        mLocationOption.setHttpTimeOut(5000);
+        mLocationOption.setInterval(1000);
+        mLocationOption.setHttpTimeOut(3000);
         mLocationClient.setLocationOption(mLocationOption);
         mLocationClient.setLocationListener(this);
         mLocationClient.startLocation();
@@ -181,22 +195,17 @@ public class SplashPresenter extends  BasePresenter implements AMapLocationListe
 
     private void goToNext(){
 
-        if(isNetWorkAvailable) {
-            LogUtil.d(Constants.DEBUG_TAG,"Prepared work finished, ready to look for city_id and navigation to next activity.");
-            if(isLocatedSuccess){
+        LogUtil.d(Constants.DEBUG_TAG,"Prepared work finished, ready to look for city_id and navigation to next activity.");
 
-                locatedSuccess();
+        if(isLocatedSuccess){
 
-            }else {
+            locatedSuccess();
 
-                locatedFail();
-            }
+        }else {
+            locatedFail();
         }
-        else {//网络未打开，从Preferences获取默认城市，如果没有，返回北京id，并将id传入cityweatherActivity，等待网络打开后刷新数据
-            LogUtil.d(Constants.DEBUG_TAG,"Please check network state !");
-            mSplashView.toastMessage("未检测到网络连接，请查看网络设置");
-            mSplashView.navigationToCityWeatherActivty(mDefaultCity);
-        }
+
+
     }
 
     private void locatedSuccess(){
@@ -206,29 +215,47 @@ public class SplashPresenter extends  BasePresenter implements AMapLocationListe
 
             mSplashView.toastMessage("定位失败，请选择城市");
             mSplashView.navigationToCityPickActivity();
-
         }else {
+            CityListDatabase.getInstance(mSplashView.getContext().getApplicationContext()).saveCityId(mTargetCity.getCityId());
+            boolean hasDefaultCity = PreferenceUtil.getboolean(mSplashView.getContext().getApplicationContext(),Constants.Preferences.PREF_NAME,Constants.Preferences.HAS_DEFAULT_CITY,false);
+            if(!hasDefaultCity){
+                PreferenceUtil.putString(mSplashView.getContext().getApplicationContext(),Constants.Preferences.PREF_NAME,Constants.Preferences.DEFAULT_CITY_ID,mTargetCity.getCityId());
+                PreferenceUtil.putString(mSplashView.getContext().getApplicationContext(),Constants.Preferences.PREF_NAME,Constants.Preferences.DEFAULT_CITY,mTargetCity.getDistrictName());
 
+                if(PreferenceUtil.getboolean(mSplashView.getContext().getApplicationContext(),Constants.Preferences.PREF_NAME,Constants.Preferences.IS_NOTI_SHOW,true)){
+
+                    Intent i = new Intent(mSplashView.getContext().getApplicationContext(), NotificationService.class);
+                    i.putExtra(Constants.INTENT_KEY_CITY_ID,mTargetCity.getCityId());
+                    mSplashView.getContext().startService(i);
+                }
+            }
             mSplashView.navigationToCityWeatherActivty(mTargetCity);
-            PreferenceUtil.putString(mSplashView.getContext().getApplicationContext(),Constants.Preferences.PREF_NAME,Constants.Preferences.LOCATED_CITY_ID,mTargetCity.getCityId());
-
+            if(isCityListDBCreated){
+                CityListDatabase.getInstance(mSplashView.getContext().getApplicationContext()).saveCityId(mTargetCity.getCityId());
+            }
         }
     }
 
     private void locatedFail(){
 
+        boolean hasChosenCity = false;
+        if(isCityListDBCreated ){
+            hasChosenCity  = CityListDatabase.getInstance(mSplashView.getContext().getApplicationContext()).loadAllChosenCityId().size() > 0;
+        }
         if(isFirstLunch){//第一次启动，定位失败，转到选择城市
 
             mSplashView.toastMessage("定位失败，请选择城市");
             mSplashView.navigationToCityPickActivity();
 
-        }else {//非第一次启动，定位失败，转到默认城市，没有默认城市返回给定位置天气
+        }else {//非第一次启动，定位失败，查看数据库是否有已选城市列表，有就转到pagerActivity，否则转到城市选择页面
+            if(hasChosenCity){
+                mSplashView.navigationToCityWeatherActivty(mDefaultCity);
 
-            mSplashView.navigationToCityWeatherActivty(mDefaultCity);
-
+            }else {
+                mSplashView.navigationToCityPickActivity();
+                mSplashView.toastMessage("定位失败，请选择城市");
+            }
         }
-
-
     }
 
     private CityEntity getTargetCity(){
@@ -237,7 +264,6 @@ public class SplashPresenter extends  BasePresenter implements AMapLocationListe
 
         //先根据districtName 寻找对应的数据
         List<CityEntity> cities = CityListDatabase.getInstance(mSplashView.getContext().getApplicationContext()).loadDistrict(mLocatedCity.getDistrict().substring(0,mLocatedCity.getDistrict().length()-1));
-
 
         for (CityEntity cityEntity: cities){
             if (cityEntity.getProvinceName().contains(mLocatedCity.getProvince()) || mLocatedCity.getProvince().contains(cityEntity.getProvinceName())){
@@ -250,7 +276,7 @@ public class SplashPresenter extends  BasePresenter implements AMapLocationListe
                 }
             }
         }
-        //如果没有找到，从数据库读出全部数据，再次寻找
+        //如果没有找到，从数据库读出全部数据，再次寻找，此处为主线程，考虑切换子线程操作。
         if (null == mTargetCity) {
             cities = CityListDatabase.getInstance(mSplashView.getContext().getApplicationContext()).loadAllData();
             for (CityEntity cityEntity : cities) {
