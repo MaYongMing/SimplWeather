@@ -59,8 +59,10 @@
 
         <service android:name=".service.NotificationService"/>
         <service android:name=".service.UpdateService"/>
-        <receiver android:name=".service.WakeUpReciever"/>
-        <receiver android:name=".service.NotiRefreshReceiver"/>
+        <receiver android:name=".service.WakeUpReciever"
+            android:process=":update"/>
+        <receiver android:name=".service.NotiRefreshReceiver"
+            android:process=":notify"/>
 
         <service android:name="com.amap.api.location.APSService"/>
         <meta-data android:name="com.amap.api.v2.apikey" android:value="d42b7b454c8b698e64d406b6a5420fe0"/>
